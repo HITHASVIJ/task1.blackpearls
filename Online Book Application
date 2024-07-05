@@ -1,0 +1,82 @@
+BOOK CLASS
+public class Book {
+    private String title;
+    private String author;
+    private double price;
+    // Constructor, getters, setters
+}
+
+CUSTOMER CLASS
+public class Order {
+    private Customer customer;
+    private List<Book> books;
+    private double totalCost;
+    // Constructor, getters, setters
+    
+    public void addBook(Book book) {
+        books.add(book);
+        totalCost += book.getPrice();
+    }
+}
+
+ORDER CLASS
+public class Order {
+    private Customer customer;
+    private List<Book> books;
+    private double totalCost;
+    // Constructor, getters, setters
+    
+    public void addBook(Book book) {
+        books.add(book);
+        totalCost += book.getPrice();
+    }
+}
+
+BOOKSTORE CLASS
+import java.util.ArrayList;
+import java.util.List;
+
+public class Bookstore {
+    private List<Book> books;
+    private List<Order> orders;
+
+    public Bookstore() {
+        books = new ArrayList<>();
+        orders = new ArrayList<>();
+    }
+
+    public void addBook(Book book) {
+        books.add(book);
+    }
+
+    public void placeOrder(Customer customer, List<Book> selectedBooks) {
+        Order order = new Order();
+        order.setCustomer(customer);
+        for (Book book : selectedBooks) {
+            order.addBook(book);
+        }
+        orders.add(order);
+        System.out.println("Order placed successfully!");
+    }
+
+    // Other methods like searching books, displaying orders, etc.
+
+    public static void main(String[] args) {
+        Bookstore bookstore = new Bookstore();
+
+        // Adding some books
+        Book book1 = new Book("Java Programming", "John Doe", 39.99);
+        Book book2 = new Book("Data Structures", "Jane Smith", 49.99);
+        bookstore.addBook(book1);
+        bookstore.addBook(book2);
+
+        // Creating a customer
+        Customer customer = new Customer("Alice", "alice@example.com", "123 Main St");
+
+        // Placing an order
+        List<Book> selectedBooks = new ArrayList<>();
+        selectedBooks.add(book1);
+        selectedBooks.add(book2);
+        bookstore.placeOrder(customer, selectedBooks);
+    }
+}
