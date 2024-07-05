@@ -1,0 +1,178 @@
+STUDENT DETAILS
+
+
+import java.io.Serializable;
+import java.util.HashMap;
+import java.util.Map;
+
+public class Student implements Serializable {
+    private String id;
+    private String name;
+    private Map<String, Double> courses; // courseName -> grade
+
+    public Student(String id, String name) {
+        this.id = id;
+        this.name = name;
+        this.courses = new HashMap<>();
+    }
+
+    public String getId() {
+        return id;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void addCourse(String courseName, double grade) {
+        courses.put(courseName, grade);
+    }
+
+    public void updateCourseGrade(String courseName, double grade) {
+        courses.put(courseName, grade);
+    }
+
+    public void removeCourse(String courseName) {
+        courses.remove(courseName);
+    }
+
+    public double calculateGPA() {
+        double total = 0.0;
+        for (double grade : courses.values()) {
+            total += grade;
+        }
+        return courses.isEmpty() ? 0.0 : total / courses.size();
+    }
+
+    public Map<String, Double> getCourses() {
+        return courses;
+    }
+
+    @Override
+    public String toString() {
+        return "ID: " + id + ", Name: " + name + ", GPA: " + calculateGPA();
+    }
+}
+
+
+
+
+
+STUDENT MANAGAMENT SYSTEM
+
+import java.io.*;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Scanner;
+
+public class StudentManagementSystem {
+    private static final String FILE_NAME = "students.txt";
+    private Map<String, Student> students;
+
+    public StudentManagementSystem() {
+        students = new HashMap<>();
+        loadStudents();
+    }
+
+    public void addStudent(String id, String name) {
+        students.put(id, new Student(id, name));
+        saveStudents();
+    }
+
+    public void deleteStudent(String id) {
+        students.remove(id);
+        saveStudents();
+    }
+
+    public void updateStudent(String id, String name) {
+        Student student = students.get(id);
+        if (student != null) {
+            student = new Student(id, name);
+            students.put(id, student);
+            saveStudents();
+        }
+    }
+
+    public void displayStudent(String id) {
+        Student student = students.get(id);
+        if (student != null) {
+            System.out.println(student);
+        } else {
+            System.out.println("Student not found.");
+        }
+    }
+
+    public void displayAllStudents() {
+        for (Student student : students.values()) {
+            System.out.println(student);
+        }
+    }
+
+    private void saveStudents() {
+        try (ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream(FILE_NAME))) {
+            oos.writeObject(students);
+        } catch (IOException e) {
+            System.out.println("Error saving student data: " + e.getMessage());
+        }
+    }
+
+    @SuppressWarnings("unchecked")
+    private void loadStudents() {
+        try (ObjectInputStream ois = new ObjectInputStream(new FileInputStream(FILE_NAME))) {
+            students = (Map<String, Student>) ois.readObject();
+        } catch (IOException | ClassNotFoundException e) {
+            System.out.println("Error loading student data: " + e.getMessage());
+        }
+    }
+
+    public static void main(String[] args) {
+        StudentManagementSystem sms = new StudentManagementSystem();
+        Scanner scanner = new Scanner(System.in);
+        while (true) {
+            System.out.println("1. Add Student");
+            System.out.println("2. Delete Student");
+            System.out.println("3. Update Student");
+            System.out.println("4. Display Student");
+            System.out.println("5. Display All Students");
+            System.out.println("6. Exit");
+            System.out.print("Enter your choice: ");
+            int choice = scanner.nextInt();
+            scanner.nextLine(); // Consume newline
+
+            switch (choice) {
+                case 1:
+                    System.out.print("Enter ID: ");
+                    String id = scanner.nextLine();
+                    System.out.print("Enter Name: ");
+                    String name = scanner.nextLine();
+                    sms.addStudent(id, name);
+                    break;
+                case 2:
+                    System.out.print("Enter ID: ");
+                    id = scanner.nextLine();
+                    sms.deleteStudent(id);
+                    break;
+                case 3:
+                    System.out.print("Enter ID: ");
+                    id = scanner.nextLine();
+                    System.out.print("Enter Name: ");
+                    name = scanner.nextLine();
+                    sms.updateStudent(id, name);
+                    break;
+                case 4:
+                    System.out.print("Enter ID: ");
+                    id = scanner.nextLine();
+                    sms.displayStudent(id);
+                    break;
+                case 5:
+                    sms.displayAllStudents();
+                    break;
+                case 6:
+                    scanner.close();
+                    System.exit(0);
+                    break;
+                default:
+                    System.out.println("Invalid choice. Please try again.");
+            }
+        }
+    }
